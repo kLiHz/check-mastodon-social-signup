@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Fetching mastodon.social
         id: fetch
+        env:
+          INSTANCE: 'mastodon.social'
         run: |
           STATUS_CODE=`curl -s -o /dev/null -w "%{http_code}" https://$INSTANCE/auth/sign_up`
           echo "STATUS_CODE='$STATUS_CODE'" >> $GITHUB_OUTPUT
