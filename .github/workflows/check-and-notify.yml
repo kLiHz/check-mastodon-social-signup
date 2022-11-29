@@ -19,4 +19,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Test
-        run: echo $TEST
+        run: echo $TEST_REPO_SECRET
+        env:
+          TEST_REPO_SECRET: ${{ secrets.TEST_REPO_SECRET }}
