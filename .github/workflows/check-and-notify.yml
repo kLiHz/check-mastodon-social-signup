@@ -51,4 +51,4 @@ jobs:
         run: |
           curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
                -H "Content-Type: application/json" \
-               -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"parse_mode\":\"MarkdownV2\",\"text\":\"Still closed for singing up\\\\. \\\\(via GitHub Action\\\\)\""
+               -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"parse_mode\":\"MarkdownV2\",\"text\":\"Still closed for signing up\\\\. \\\\(via GitHub Action\\\\)\""
