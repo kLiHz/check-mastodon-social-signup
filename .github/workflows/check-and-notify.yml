@@ -18,7 +18,34 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Test
-        run: echo $TEST_REPO_SECRET
+      - name: Fetching mastodon.social
+        id: fetch
+        run: |
+          STATUS_CODE=`curl -s -o /dev/null -w "%{http_code}" https://$INSTANCE/auth/sign_up`
+          echo "STATUS_CODE='$STATUS_CODE'" >> $GITHUB_OUTPUT
+      
+      - name: Print Responce code
+        id: print
+        run: echo "Responce code is ${{ steps.fetch.outputs.STATUS_CODE }}."
+      
+      - name: Notify Open
+        id: notify-open
+        if: ${{ steps.fetch.outputs.STATUS_CODE == '200' }}
         env:
-          TEST_REPO_SECRET: ${{ secrets.TEST_REPO_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+               -H "Content-Type: application/json" \
+               -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"parse_mode\":\"MarkdownV2\",\"text\":\"\`$INSTANCE\` is now *OPEN* for signing up\\\\! (via GitHub Action)\""
+      
+      - name: Notify Closed
+        id: notify-closed
+        if: ${{ steps.fetch.outputs.STATUS_CODE != '200' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+               -H "Content-Type: application/json" \
+               -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"parse_mode\":\"MarkdownV2\",\"text\":\"\`$INSTANCE\` is still closed for singing up\\\\. (via GitHub Action)\""
